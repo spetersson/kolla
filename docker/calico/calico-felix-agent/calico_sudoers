@@ -1,0 +1,1 @@
+neutron ALL = (root) NOPASSWD: /usr/bin/calico-felix --config-file /etc/neutron/felix.conf

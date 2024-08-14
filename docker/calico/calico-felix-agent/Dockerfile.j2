@@ -1,0 +1,16 @@
+FROM {{ namespace }}/{{ image_prefix }}neutron-base:{{ tag }}
+{% block labels %}
+LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build_date }}"
+{% endblock %}
+
+{% block calico_felix_agent_header %}{% endblock %}
+RUN add-apt-repository ppa:project-calico/calico-3.28 && \
+    apt-get update && ln -s /var/log/kolla/neutron /var/log/neutron && \
+    apt-get install -y calico-compute --option=Dpkg::Options::=--force-confold
+
+COPY calico_sudoers /etc/sudoers.d/kolla_calico_sudoers
+
+{% block calico_felix_agent_footer %}{% endblock %}
+{% block footer %}{% endblock %}
+
+USER neutron

@@ -1,0 +1,23 @@
+FROM {{ namespace }}/{{ image_prefix }}neutron-base:{{ tag }}
+{% block labels %}
+LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build_date }}"
+{% endblock %}
+
+{% block calico_dhcp_agent_header %}{% endblock %}
+RUN add-apt-repository ppa:project-calico/calico-3.28 && \
+    apt-get update && ln -s /var/log/kolla/neutron /var/log/neutron
+
+{% import "macros.j2" as macros with context %}
+
+{% set calico_dhcp_agent_packages = [
+    'calico-dhcp-agent',
+] %}
+
+{{ macros.install_packages(calico_dhcp_agent_packages | customizable("packages")) }}
+
+COPY calico_sudoers /etc/sudoers.d/kolla_calico_sudoers
+
+{% block calico_dhcp_agent_footer %}{% endblock %}
+{% block footer %}{% endblock %}
+
+USER neutron
